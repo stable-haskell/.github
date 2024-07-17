@@ -1,0 +1,29 @@
+name: Sync forked repositories
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  sync-forks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repository:
+          - ghc
+          - cabal
+          - haskell-language-server
+          - stack
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          # required
+          app-id: ${{ vars.AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.AUTOMATION_APP_KEY }}
+          repositories: ${{ matrix.repository }}
+          
+      - run: gh repo sync ${{ github.repository_owner }}/${{ matrix.repository }}
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
