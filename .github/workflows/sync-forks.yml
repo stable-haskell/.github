@@ -20,11 +20,11 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-          # required
           app-id: ${{ vars.AUTOMATION_APP_ID }}
           private-key: ${{ secrets.AUTOMATION_APP_KEY }}
+          owner: stable-haskell
           repositories: ${{ matrix.repository }}
           
-      - run: gh repo sync ${{ github.repository_owner }}/${{ matrix.repository }}
+      - run: gh repo sync stable-haskell/${{ matrix.repository }}
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
